@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Exercise, MuscleCategory, ExerciseClipartKey } from '../types';
 import { ExerciseImage } from './ExerciseImage';
 import { ExerciseClipart } from './ExerciseClipart';
-import { resizeImageFile } from '../utils/imageUtils';
+import { resizeImageFile, isGifUrl } from '../utils/imageUtils';
 import { isValidYouTubeUrl, getYouTubeEmbedUrl } from '../utils/youtube';
 import { CATEGORIES } from '../data/defaultPlan';
 import {
@@ -43,7 +43,7 @@ export const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
   // Media
   const [customImageUrl, setCustomImageUrl] = useState<string>(exercise.customImageUrl || '');
   const [imageInputUrl, setImageInputUrl] = useState('');
-  const [imageMode, setImageMode] = useState<'upload' | 'url'>('upload');
+  const [showUrlInput, setShowUrlInput] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
 
@@ -52,7 +52,7 @@ export const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
   const [youtubeInput, setYoutubeInput] = useState(exercise.youtubeUrl || '');
   const [youtubeError, setYoutubeError] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -63,12 +63,12 @@ export const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
       setImageError(false);
       const dataUrl = await resizeImageFile(file, 800, 0.82);
       setCustomImageUrl(dataUrl);
-    } catch (err) {
-      alert('Could not read image file. Please try another image.');
+    } catch (err: any) {
+      alert(err?.message || 'Could not read image file. Please try another image.');
       setImageError(true);
     } finally {
       setIsProcessingImage(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (galleryInputRef.current) galleryInputRef.current.value = '';
     }
   };
 
@@ -76,6 +76,7 @@ export const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
     if (!imageInputUrl.trim()) return;
     setCustomImageUrl(imageInputUrl.trim());
     setImageInputUrl('');
+    setShowUrlInput(false);
     setImageError(false);
   };
 
@@ -188,16 +189,24 @@ export const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
               )}
             </div>
 
-            {/* Live Preview */}
-            <div className="flex items-center gap-4">
-              <div className="relative h-24 w-32 shrink-0 rounded-xl border border-slate-200 bg-white overflow-hidden shadow-2xs">
+            {/* Live Preview & Action Boxes */}
+            <div className="flex items-stretch gap-3 sm:gap-4">
+              {/* Left: Small Image Window Preview */}
+              <div className="relative h-[132px] w-32 sm:w-36 shrink-0 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shadow-2xs flex items-center justify-center">
                 {customImageUrl ? (
-                  <img
-                    src={customImageUrl}
-                    alt="Preview"
-                    className="h-full w-full object-cover"
-                    onError={() => setImageError(true)}
-                  />
+                  <>
+                    <img
+                      src={customImageUrl}
+                      alt="Preview"
+                      className={`h-full w-full ${isGifUrl(customImageUrl) ? 'object-contain' : 'object-cover'}`}
+                      onError={() => setImageError(true)}
+                    />
+                    {isGifUrl(customImageUrl) && (
+                      <span className="absolute top-1.5 left-1.5 rounded-md bg-blue-600/90 text-white text-[9px] font-bold px-1.5 py-0.5 shadow-xs uppercase tracking-wider backdrop-blur-xs">
+                        GIF
+                      </span>
+                    )}
+                  </>
                 ) : (
                   <div className="h-full w-full flex items-center justify-center p-1 text-slate-700">
                     <ExerciseClipart type={clipartType} size="md" className="border-0 bg-transparent text-slate-700" />
@@ -205,70 +214,107 @@ export const ExerciseEditModal: React.FC<ExerciseEditModalProps> = ({
                 )}
               </div>
 
-              <div className="flex-1 min-w-0 space-y-2">
-                <div className="flex gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setImageMode('upload')}
-                    className={`flex-1 rounded-lg py-1.5 text-[11px] font-medium border transition-colors ${
-                      imageMode === 'upload'
-                        ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    Upload Photo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setImageMode('url')}
-                    className={`flex-1 rounded-lg py-1.5 text-[11px] font-medium border transition-colors ${
-                      imageMode === 'url'
-                        ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    Image URL
-                  </button>
-                </div>
+              {/* Right: The 3 Boxes in a vertical list, same size, one below another */}
+              <div className="flex-1 min-w-0 flex flex-col justify-between gap-2">
+                {/* Hidden File Input for Gallery */}
+                <input
+                  type="file"
+                  ref={galleryInputRef}
+                  accept="image/*,image/gif"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="exercise-choose-gallery"
+                />
 
-                {imageMode === 'upload' ? (
-                  <div>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      id="exercise-image-upload"
-                    />
-                    <label
-                      htmlFor="exercise-image-upload"
-                      className="flex items-center justify-center gap-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-400 cursor-pointer shadow-2xs transition-all active:scale-[0.99]"
-                    >
-                      <Upload className="h-3.5 w-3.5 text-blue-600" />
-                      <span>{isProcessingImage ? 'Processing...' : 'Choose Photo from Gallery'}</span>
-                    </label>
-                  </div>
+                {/* Box 1: Upload from Gallery */}
+                <button
+                  type="button"
+                  onClick={() => galleryInputRef.current?.click()}
+                  disabled={isProcessingImage}
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all shadow-2xs active:scale-[0.99] cursor-pointer"
+                >
+                  <Upload className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+                  <span className="truncate">{isProcessingImage ? 'Processing...' : 'Upload from Gallery'}</span>
+                </button>
+
+                {/* Box 2: Add Image URL (Toggles dedicated full-width input below) */}
+                <button
+                  type="button"
+                  onClick={() => setShowUrlInput((prev) => !prev)}
+                  className={`flex h-10 w-full items-center justify-center gap-2 rounded-xl border transition-all shadow-2xs active:scale-[0.99] cursor-pointer ${
+                    showUrlInput
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 font-bold'
+                      : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-400 font-semibold'
+                  } text-xs`}
+                >
+                  <Link className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+                  <span className="truncate">Add Image URL</span>
+                </button>
+
+                {/* Box 3: Revert to Stick-Figure or Default indicator */}
+                {customImageUrl ? (
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50/70 px-3 text-xs font-semibold text-red-600 hover:bg-red-100 hover:border-red-300 transition-all shadow-2xs active:scale-[0.99] cursor-pointer"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5 text-red-600 shrink-0" />
+                    <span className="truncate">Revert to Stick-Figure</span>
+                  </button>
                 ) : (
-                  <div className="flex gap-1.5">
-                    <input
-                      type="url"
-                      placeholder="https://example.com/exercise.jpg"
-                      value={imageInputUrl}
-                      onChange={(e) => setImageInputUrl(e.target.value)}
-                      className="flex-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-900 outline-none focus:border-blue-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleApplyImageUrl}
-                      className="rounded-lg bg-blue-600 px-3 py-1.5 font-semibold text-white hover:bg-blue-500 text-xs shrink-0"
-                    >
-                      Apply
-                    </button>
+                  <div className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 px-2 text-[11px] text-slate-400 font-medium select-none">
+                    <span>Default illustration active</span>
                   </div>
                 )}
               </div>
             </div>
+
+            {/* Dedicated Full-Width Image URL input row (No overlap, plenty of room) */}
+            {showUrlInput && (
+              <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3 space-y-2 transition-all">
+                <div className="flex items-center justify-between text-[11px] font-semibold text-blue-900">
+                  <span className="flex items-center gap-1.5">
+                    <Link className="h-3 w-3 text-blue-600" />
+                    Paste Image or Animated GIF URL
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowUrlInput(false)}
+                    className="text-slate-400 hover:text-slate-600 text-xs p-1 rounded-md hover:bg-blue-100 transition-colors cursor-pointer"
+                    title="Close"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="url"
+                    placeholder="https://example.com/exercise-demo.gif"
+                    value={imageInputUrl}
+                    onChange={(e) => {
+                      setImageInputUrl(e.target.value);
+                      setImageError(false);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleApplyImageUrl();
+                      }
+                    }}
+                    className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-500 shadow-2xs min-w-0"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyImageUrl}
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 shadow-2xs shrink-0 cursor-pointer active:scale-95 transition-all"
+                  >
+                    Apply Link
+                  </button>
+                </div>
+              </div>
+            )}
 
             {imageError && (
               <p className="text-[11px] text-red-600 flex items-center gap-1">

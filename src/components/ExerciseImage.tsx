@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ExerciseClipart } from './ExerciseClipart';
 import { ExerciseClipartKey } from '../types';
 import { Image as ImageIcon, ExternalLink } from 'lucide-react';
+import { isGifUrl } from '../utils/imageUtils';
 
 interface ExerciseImageProps {
   customImageUrl?: string;
@@ -33,6 +34,7 @@ export const ExerciseImage: React.FC<ExerciseImageProps> = ({
   };
 
   const hasValidCustomImage = Boolean(customImageUrl && !imageError && customImageUrl.trim().length > 0);
+  const isGif = hasValidCustomImage && isGifUrl(customImageUrl);
 
   return (
     <div
@@ -40,15 +42,20 @@ export const ExerciseImage: React.FC<ExerciseImageProps> = ({
       className={`relative group overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition-all ${
         onClick ? 'cursor-pointer hover:border-blue-400 hover:shadow-xs' : ''
       } ${sizeClasses[size]} ${className}`}
-      title={hasValidCustomImage ? `Custom demonstration for ${name}` : `${name} diagram`}
+      title={
+        hasValidCustomImage
+          ? isGif
+            ? `Animated demonstration for ${name}`
+            : `Custom demonstration for ${name}`
+          : `${name} diagram`
+      }
     >
       {hasValidCustomImage ? (
         <img
           src={customImageUrl}
           alt={name}
           onError={() => setImageError(true)}
-          className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
+          className={`h-full w-full ${isGif ? 'object-contain' : 'object-cover'} object-center transition-transform duration-300 group-hover:scale-105`}
         />
       ) : (
         <div className="h-full w-full flex items-center justify-center p-1 text-slate-700">
@@ -60,10 +67,14 @@ export const ExerciseImage: React.FC<ExerciseImageProps> = ({
         </div>
       )}
 
-      {/* Overlay indicator for custom photo */}
+      {/* Overlay indicator for custom photo or animated GIF */}
       {hasValidCustomImage && (
-        <div className="absolute bottom-1 right-1 rounded-md bg-black/60 px-1 py-0.5 text-[9px] font-medium text-white backdrop-blur-xs flex items-center gap-0.5 pointer-events-none opacity-80">
-          <ImageIcon className="h-2.5 w-2.5" />
+        <div className="absolute bottom-1 right-1 rounded-md bg-black/60 px-1 py-0.5 text-[9px] font-bold text-white backdrop-blur-xs flex items-center gap-0.5 pointer-events-none opacity-85">
+          {isGif ? (
+            <span className="tracking-wider">GIF</span>
+          ) : (
+            <ImageIcon className="h-2.5 w-2.5" />
+          )}
         </div>
       )}
 

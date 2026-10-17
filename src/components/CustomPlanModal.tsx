@@ -9,7 +9,7 @@ import {
 import { EXERCISE_LIBRARY, CATEGORIES, DEFAULT_4DAY_PLAN } from '../data/defaultPlan';
 import { ExerciseImage } from './ExerciseImage';
 import { ExerciseClipart } from './ExerciseClipart';
-import { resizeImageFile } from '../utils/imageUtils';
+import { resizeImageFile, isGifUrl } from '../utils/imageUtils';
 import { isValidYouTubeUrl } from '../utils/youtube';
 import {
   X,
@@ -604,9 +604,13 @@ export const CustomPlanModal: React.FC<CustomPlanModalProps> = ({
                   Demonstration Image (Optional)
                 </span>
                 <div className="flex items-center gap-3">
-                  <div className="relative h-16 w-24 shrink-0 rounded-lg border border-slate-200 bg-white overflow-hidden">
+                  <div className="relative h-16 w-24 shrink-0 rounded-lg border border-slate-200 bg-white overflow-hidden flex items-center justify-center">
                     {customImageUrl ? (
-                      <img src={customImageUrl} alt="Preview" className="h-full w-full object-cover" />
+                      <img
+                        src={customImageUrl}
+                        alt="Preview"
+                        className={`h-full w-full ${isGifUrl(customImageUrl) ? 'object-contain' : 'object-cover'}`}
+                      />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center text-slate-400">
                         <ImageIcon className="h-6 w-6" />
@@ -617,7 +621,7 @@ export const CustomPlanModal: React.FC<CustomPlanModalProps> = ({
                     <label className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-2xs">
                       <Upload className="h-3.5 w-3.5 text-blue-600" />
                       <span>Upload from Device</span>
-                      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                      <input type="file" accept="image/*,image/gif" onChange={handleImageUpload} className="hidden" />
                     </label>
                     <input
                       type="url"
