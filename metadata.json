@@ -1,0 +1,8 @@
+{
+  "name": "gym workout planner",
+  "description": "Minimal 4-Day muscle building workout tracker with visual stick-figure exercise cliparts, easy sets/reps logging, and custom routine builder.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

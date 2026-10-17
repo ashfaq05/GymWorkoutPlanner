@@ -1,0 +1,138 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile, active plan selection, and cloud preferences",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User avatar URL"
+        },
+        "isGuest": {
+          "type": "boolean",
+          "description": "Whether user is operating in guest mode"
+        },
+        "activePlanId": {
+          "type": "string",
+          "description": "ID of currently active workout plan"
+        },
+        "preferences": {
+          "type": "string",
+          "description": "Serialized JSON string of UserPreferences"
+        },
+        "weightUnit": {
+          "type": "string",
+          "enum": ["kg", "lbs"]
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp"
+        }
+      },
+      "required": ["userId"]
+    },
+    "UserWorkoutPlan": {
+      "title": "UserWorkoutPlan",
+      "description": "Saved workout routine plan",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 600
+        },
+        "daysCount": {
+          "type": "number"
+        },
+        "isCustom": {
+          "type": "boolean"
+        },
+        "days": {
+          "type": "string",
+          "description": "Serialized JSON string of days array"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "userId", "name"]
+    },
+    "UserSessionLog": {
+      "title": "UserSessionLog",
+      "description": "Daily logged workout session record",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "planId": {
+          "type": "string"
+        },
+        "dayKey": {
+          "type": "string"
+        },
+        "dayTitle": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "timestamp": {
+          "type": "number"
+        },
+        "completed": {
+          "type": "boolean"
+        },
+        "durationSeconds": {
+          "type": "number"
+        },
+        "exercises": {
+          "type": "string",
+          "description": "Serialized JSON array of logged exercises and sets"
+        }
+      },
+      "required": ["id", "userId", "date"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Private user profile and cloud settings"
+    },
+    "/users/{userId}/plans/{planId}": {
+      "schema": "UserWorkoutPlan",
+      "description": "User customized workout routine plans"
+    },
+    "/users/{userId}/logs/{logId}": {
+      "schema": "UserSessionLog",
+      "description": "Daily logged workout sets, reps, and weights"
+    }
+  }
+}

@@ -1,0 +1,225 @@
+@import "tailwindcss";
+
+:root {
+  --android-status-bar-height: 0px;
+  --android-nav-bar-height: 0px;
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  /* Status Bar Safe Area Padding for App Header (prevents collision with Android clock, battery, wifi, notch) */
+  .header-safe-top {
+    padding-top: calc(0.75rem + max(env(safe-area-inset-top, 0px), var(--android-status-bar-height, 0px)));
+    padding-bottom: 0.75rem;
+  }
+
+  /* Bottom Navigation Safe Area Padding (clears Android gesture bar / home navigation) */
+  .nav-safe-bottom {
+    padding-bottom: calc(0.5rem + max(env(safe-area-inset-bottom, 0px), var(--android-nav-bar-height, 0px)));
+    padding-top: 0.5rem;
+  }
+
+  /* Modal Safe Area Overlay (ensures modal headers and close buttons don't collide with status bar) */
+  .modal-safe-overlay {
+    padding-top: calc(1rem + max(env(safe-area-inset-top, 0px), var(--android-status-bar-height, 0px)));
+    padding-bottom: calc(1rem + max(env(safe-area-inset-bottom, 0px), var(--android-nav-bar-height, 0px)));
+  }
+
+  /* Floating Timer Safe Bottom Position */
+  .timer-safe-bottom {
+    bottom: calc(4.25rem + max(env(safe-area-inset-bottom, 0px), var(--android-nav-bar-height, 0px)));
+  }
+}
+
+body {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ==========================================================================
+   Dark Slate & AMOLED Theme Comprehensive Styles
+   ========================================================================== */
+html.dark,
+html[data-theme="dark"],
+html[data-theme="amoled"],
+body.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0b0f19 !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="amoled"] body {
+  background-color: #000000 !important;
+}
+
+/* Base Surfaces (Cards, Containers, Modal Boxes) */
+html.dark .bg-white {
+  background-color: #131b2e !important;
+}
+
+html[data-theme="amoled"] .bg-white {
+  background-color: #0c0f17 !important;
+}
+
+/* Glassmorphism Headers & Navbars */
+html.dark .bg-white\/95 {
+  background-color: rgba(19, 27, 46, 0.95) !important;
+  border-color: #22314e !important;
+}
+
+html[data-theme="amoled"] .bg-white\/95 {
+  background-color: rgba(0, 0, 0, 0.95) !important;
+  border-color: #1a2233 !important;
+}
+
+/* Secondary Panels & Sub-sections */
+html.dark .bg-slate-50 {
+  background-color: #0b0f19 !important;
+}
+
+html[data-theme="amoled"] .bg-slate-50 {
+  background-color: #000000 !important;
+}
+
+html.dark .bg-slate-50\/50,
+html.dark .bg-slate-50\/60,
+html.dark .bg-slate-50\/70,
+html.dark .bg-slate-50\/80 {
+  background-color: rgba(11, 15, 25, 0.8) !important;
+}
+
+html.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+html.dark .bg-slate-100\/70 {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+}
+
+html.dark .bg-slate-200 {
+  background-color: #22314e !important;
+}
+
+/* Borders & Separators */
+html.dark .border-slate-200,
+html.dark .border-slate-200\/90 {
+  border-color: #22314e !important;
+}
+
+html.dark .border-slate-300 {
+  border-color: #334155 !important;
+}
+
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1c273e !important;
+}
+
+/* Typography Hierarchy */
+html.dark .text-slate-900,
+html.dark .text-slate-950 {
+  color: #f8fafc !important;
+}
+
+html.dark .text-slate-800,
+html.dark .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+html.dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Inputs, Textareas, Stepper Buttons */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select {
+  background-color: #0b0f19 !important;
+  color: #f8fafc !important;
+  border-color: #2a374f !important;
+}
+
+html[data-theme="amoled"] input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="amoled"] textarea,
+html[data-theme="amoled"] select {
+  background-color: #000000 !important;
+  border-color: #262626 !important;
+}
+
+html.dark input:focus,
+html.dark textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 1px #3b82f6 !important;
+}
+
+/* Selected Theme Pill in Modal */
+html.dark .bg-blue-50 {
+  background-color: rgba(37, 99, 235, 0.2) !important;
+  color: #93c5fd !important;
+}
+
+/* Selected Day Pill & High-Contrast Action Buttons */
+html.dark .bg-slate-900:not(.bg-blue-600):not(.bg-emerald-600):not(.bg-red-600) {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+html.dark .bg-slate-900:not(.bg-blue-600):not(.bg-emerald-600):not(.bg-red-600):hover {
+  background-color: #1d4ed8 !important;
+}
+
+/* Completed Set highlight in table */
+html.dark .bg-emerald-50\/50 {
+  background-color: rgba(6, 78, 59, 0.35) !important;
+}
+
+/* Hover States in Dark Mode */
+html.dark .hover\:bg-slate-50:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+html.dark .hover\:bg-slate-100:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .hover\:bg-slate-200:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html.dark .hover\:border-slate-300:hover {
+  border-color: #3b82f6 !important;
+}
+
+/* Modals & Dialog Shadows */
+html.dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7) !important;
+}
+
+html.dark .shadow-2xs,
+html.dark .shadow-xs {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3) !important;
+}

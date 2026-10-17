@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#09090b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  
+  <!-- Subtle border -->
+  <rect width="504" height="504" x="4" y="4" rx="106" fill="none" stroke="#27272a" stroke-width="8"/>
+  
+  <!-- Gym Dumbbell Icon in sleek Android style -->
+  <g transform="translate(256,256) rotate(-45) translate(-256,-256)">
+    <!-- Central Bar -->
+    <rect x="190" y="240" width="132" height="32" rx="16" fill="#e4e4e7"/>
+    <!-- Knurling grips -->
+    <line x1="225" y1="240" x2="225" y2="272" stroke="#71717a" stroke-width="4"/>
+    <line x1="256" y1="240" x2="256" y2="272" stroke="#71717a" stroke-width="4"/>
+    <line x1="287" y1="240" x2="287" y2="272" stroke="#71717a" stroke-width="4"/>
+    
+    <!-- Left Inner Collar -->
+    <rect x="170" y="220" width="20" height="72" rx="8" fill="#a1a1aa"/>
+    <!-- Left Inner Plate -->
+    <rect x="130" y="180" width="36" height="152" rx="14" fill="#3b82f6"/>
+    <!-- Left Outer Plate -->
+    <rect x="94" y="200" width="32" height="112" rx="12" fill="#2563eb"/>
+    
+    <!-- Right Inner Collar -->
+    <rect x="322" y="220" width="20" height="72" rx="8" fill="#a1a1aa"/>
+    <!-- Right Inner Plate -->
+    <rect x="346" y="180" width="36" height="152" rx="14" fill="#3b82f6"/>
+    <!-- Right Outer Plate -->
+    <rect x="386" y="200" width="32" height="112" rx="12" fill="#2563eb"/>
+  </g>
+</svg>
